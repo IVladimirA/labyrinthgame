@@ -1,0 +1,107 @@
+<html>
+<head>
+<title>LabyrinthGame</title>
+<style>
+td {
+  width: 15px;
+  height: 25px;
+}
+td.empty {
+  background-color: white;
+}
+td.wall {
+  background-color: gray;
+}
+td.player {
+  background-color: green;
+}
+
+
+</style>
+</head>
+
+<input type="button" onclick="start()" value="start"/>
+
+<table id="gametable" border='1px' cellpadding='5px' cellspacing='0px'>
+
+</table>
+
+<script>
+
+var token = '';
+
+function draw(cells, playerX, playerY) {
+  var table = document.getElementById('gametable');
+  table.innerHTML = '';
+  const height = cells.length;
+  const width = cells[0].length;
+  
+  for (var j = 0; j < height; j++) {
+    var tr = document.createElement('tr');
+    for (var i = 0; i < width; i++) {
+      var td = document.createElement('td');
+      if (cells[j][i] == 0)
+        td.className = 'empty';
+      if (cells[j][i] == 1)
+        td.className = 'wall';
+      if (playerY == j && playerX == i) {
+        td.className = 'player';
+      }  
+      tr.appendChild(td); 
+    }
+    table.appendChild(tr);
+  }
+}
+
+function start() {
+  const Http = new XMLHttpRequest();
+  const url='http://localhost:3000/game/create';
+  Http.open("POST", url);
+  Http.send();
+
+  Http.onreadystatechange = (e) => {
+    console.log(Http.responseText);
+    console.log(JSON.parse(Http.responseText));
+    const responseJson = JSON.parse(Http.responseText);
+    token = responseJson.token;
+    draw(responseJson.game.map.cells);
+  }
+
+}
+
+['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight']
+
+function gameKeyboard(key) {
+  let direction = 'up';
+  if (key.code = 'ArrowRight') {
+    direction = 'right';
+  }
+  if (key.code = 'ArrowDown') {
+    direction = 'down';
+  }
+  if (key.code = 'ArrowLeft') {
+    direction = 'left';
+  }
+
+  const Http = new XMLHttpRequest();
+  const url = `http://localhost:3000/game/player/move?token=${token}`;
+  Http.open("POST", url);
+  Http.send(JSON.stringify(direction));
+
+  Http.onreadystatechange = (e) => {
+    console.log(Http.responseText);
+    console.log(JSON.parse(Http.responseText));
+    const responseJson = JSON.parse(Http.responseText);
+    draw(responseJson.game.map.cells);
+  }
+
+}
+
+document.body.onkeydown = function (e) {
+  gameKeyboard(e);
+}
+
+</script>
+
+</body>
+</html>
