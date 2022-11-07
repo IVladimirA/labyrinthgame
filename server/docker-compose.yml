@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  ts-node-docker:
+    environment:
+      - MONGODB_URI
+      - PORT
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/home/app/src
+      - ./nodemon.json:/home/app/nodemon.json
+    container_name: ts-node-docker
+    expose:
+      - '${PORT}'
+    ports:
+      - '${PORT}:${PORT}'
+    command: npm run dev
