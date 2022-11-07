@@ -16,6 +16,6 @@ COPY . .
 
 run npm run build
 
-EXPOSE 3000
+EXPOSE $PORT
 
 ENTRYPOINT ["node", "./build/index.js"]
