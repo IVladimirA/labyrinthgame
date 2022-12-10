@@ -58,6 +58,7 @@ export const register = async (req: Request, res: Response) => {
             email: req.body.email,
             fullName: req.body.fullName,
             passwordHash: hash,
+            score: 0,
             avatarUrl: req.body.avatarUrl,
         });
 
@@ -102,7 +103,42 @@ export const getMe = async (req: Request, res: Response) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: 'acces denied',
+            message: 'access denied',
+        });
+    }
+}
+
+export const changeScore = async (req: Request, res: Response) => {
+    try {
+        const user = await UserModel.findById(req.body.userId);
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found',
+            });
+        }
+
+        user.score = Math.max(user.score + req.body.scoreChange, 0);
+        await user.save();
+        res.status(200).end();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Error',
+        });
+    }
+}
+
+export const getLeaders = async (req: Request, res: Response) => {
+    try {
+        const leaders = await UserModel.find({}).sort({"score": -1}).limit(10).exec();
+        res.json(leaders.map(x => ({
+            fullName: x.fullName,
+            score: x.score,
+        })));
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Error',
         });
     }
 }

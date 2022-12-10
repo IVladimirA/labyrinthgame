@@ -22,9 +22,14 @@ app.post('/auth/login', UserController.login);
 
 app.post('/auth/register', registerValidation, UserController.register);
 
+app.post('/me/scorechange', checkAuth, UserController.changeScore);
+
+app.get('/leaderboard', checkAuth, UserController.getLeaders);
+
 app.get('/auth/me', checkAuth, UserController.getMe);
 
-app.get('/game/map', MapController.loadMap);
+app.get('/game/map', checkAuth, MapController.loadMap);
+
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('server started');
