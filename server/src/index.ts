@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 import * as UserController from './controllers/user';
 import * as MapController from './controllers/map';
+import * as CommentController from './controllers/comment';
 import { registerValidation } from './validations/auth';
 import checkAuth from './utils/check-auth';
 
@@ -18,18 +19,16 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/auth/login', UserController.login);
-
 app.post('/auth/register', registerValidation, UserController.register);
-
+app.post('/auth/login', UserController.login);
 app.post('/me/scorechange', checkAuth, UserController.changeScore);
-
-app.get('/leaderboard', checkAuth, UserController.getLeaders);
-
 app.get('/auth/me', checkAuth, UserController.getMe);
+app.get('/leaderboard', checkAuth, UserController.getLeaders);
 
 app.get('/game/map', checkAuth, MapController.loadMap);
 
+app.post('/comment', checkAuth, CommentController.addNew);
+app.get('/comments/all', checkAuth, CommentController.getAll);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('server started');
