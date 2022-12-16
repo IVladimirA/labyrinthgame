@@ -1,0 +1,88 @@
+@import "./bootstrapConf.scss";
+@import "variables";
+
+body,
+.App,
+.root {
+  background-color: #f3f3f3;
+  font-family: Rubik, sans-serif;
+}
+
+
+
+li {
+  list-style: none;
+}
+
+.dashed {
+  border-style: dashed !important;
+}
+
+.fs-6 {
+  font-size: 14px !important;
+}
+
+.user__avatar {
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+.search-block {
+  top: 40px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 0 2px grey;
+  z-index: 100;
+}
+
+.search-block__item {
+  :hover {
+    background-color: #e0e0e0;
+  }
+
+  :active {
+    background-color: rgb(13, 110, 253);
+  }
+
+  & * {
+    transition: all .09s ease;
+  }
+}
+
+.w-md-0 {
+  @media screen and (min-width: 768px) {
+    width: 0 !important;
+  }
+}
+
+td {
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+td.wall {
+  background-color: gray;
+}
+
+td.player {
+  background-color: green;
+}
+
+td.enemy {
+  background-color: red;
+}
+
+td.fruit {
+  background-color: yellow;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0;
+  /* <-- Apparently some margin are still there even though it's hidden */
+}
