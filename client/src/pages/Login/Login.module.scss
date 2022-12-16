@@ -1,0 +1,9 @@
+.container {
+  @media screen and(min-width: 768px) {
+    max-width: 900px;
+  }
+}
+
+.reg__button {
+  height: 50px;
+}
