@@ -1,11 +1,14 @@
-class Maze {
+export class Maze {
 
     constructor(width, height, enemyCnt = 0, fruitCnt = 0) {
         this.width = width;
         this.height = height;
         this.field = [];
+        this.user_coords = [];
         this.enemyCnt = enemyCnt;
+        this.enemies = [];
         this.fruitCnt = fruitCnt;
+        this.fruits = [];
         this.init();
     }
 
@@ -17,9 +20,37 @@ class Maze {
             this.field.push(row);
         }
 
-        let x = Math.floor(Math.random() * this.width);
         let y = Math.floor(Math.random() * this.height);
+        let x = Math.floor(Math.random() * this.width);
         this.dig(x, y);
+
+        while (this.user_coords.length === 0) {
+            y = Math.floor(Math.random() * this.height);
+            x = Math.floor(Math.random() * this.width);
+            if (this.field[y][x] === '.') {
+                this.field[y][x] = 'U';
+                this.user_coords.push(y);
+                this.user_coords.push(x);
+            }
+        }
+
+        while (this.fruits.length < this.fruitCnt) {
+            y = Math.floor(Math.random() * this.height);
+            x = Math.floor(Math.random() * this.width);
+            if (this.field[y][x] === '.') {
+                this.field[y][x] = 'F';
+                this.fruits.push([y, x]);
+            }
+        }
+
+        while (this.enemies.length < this.enemyCnt) {
+            y = Math.floor(Math.random() * this.height);
+            x = Math.floor(Math.random() * this.width);
+            if (this.field[y][x] === '.') {
+                this.field[y][x] = 'E';
+                this.enemies.push([y, x]);
+            }
+        }
     }
 
     dig(i, j) {
