@@ -29,7 +29,7 @@ class Game {
                     ++this.points;
                 else if (cell === 'E')
                     this.isGameOver = true;
-                this.maze.field[y][x] = 'P';
+                this.maze.field[y + dy][x + dx] = 'P';
             }
         }
     }
@@ -70,6 +70,8 @@ class Game {
                     min_x = j + 1;
                 }
             if (min_dist !== null) {
+                enemy[0] = min_y;
+                enemy[1] = min_x;
                 if (this.maze.field[min_y][min_x] === 'P')
                     this.isGameOver = true;
                 this.maze.field[min_y][min_x] = 'E';
@@ -92,3 +94,4 @@ class Game {
         return field;
     }
 }
+
