@@ -1,248 +1,226 @@
 import React from "react";
+import { Game as gameClass } from "./Game.js";
+import { ButtonGroup, Button } from "react-bootstrap";
+import baseWall from "../assets/base/block.png";
+import baseEnemie from "../assets/base/enemie.png";
+import baseFruit from "../assets/base/fruit.gif";
+import basePlayer from "../assets/base/player.png";
+import helloweenWall from "../assets/helloween/block.png";
+import helloweenEnemie from "../assets/helloween/enemie.png";
+import helloweenFruit from "../assets/helloween/fruit.gif";
+import helloweenPlayer from "../assets/helloween/player.png";
+import newYearWall from "../assets/new_year/block.png";
+import newYearEnemie from "../assets/new_year/enemie.webp";
+import newYearFruit from "../assets/new_year/fruit.gif";
+import newYearPlayer from "../assets/new_year/player.png";
+import spaceWall from "../assets/space/block.jpg";
+import spaceEnemie from "../assets/space/enemie.png";
+import spaceFruit from "../assets/space/fruit.gif";
+import spacePlayer from "../assets/space/player.png";
+const directions = [
+  {
+    name: "up",
+    key: "w",
+  },
+  {
+    name: "down",
+    key: "s",
+  },
+  {
+    name: "left",
+    key: "a",
+  },
+  {
+    name: "right",
+    key: "d",
+  },
+];
+const themes = [
+  {
+    name: "Основная",
+    id: 0,
+    wall: baseWall,
+    enemie: baseEnemie,
+    player: basePlayer,
+    fruit: baseFruit,
+  },
+  {
+    name: "Хеллоуин",
+    id: 1,
+    wall: helloweenWall,
+    enemie: helloweenEnemie,
+    player: helloweenPlayer,
+    fruit: helloweenFruit,
+  },
+  {
+    name: "Новый год",
+    id: 2,
+    wall: newYearWall,
+    enemie: newYearEnemie,
+    player: newYearPlayer,
+    fruit: newYearFruit,
+  },
+  {
+    name: "Космос",
+    id: 3,
+    wall: spaceWall,
+    enemie: spaceEnemie,
+    player: spacePlayer,
+    fruit: spaceFruit,
+  },
+];
 function Game({ onLose }) {
   const [isStarted, setIsStarted] = React.useState(false);
   const [isLose, setIsLose] = React.useState(false);
-  const width = React.useRef(null);
-  const height = React.useRef(null);
-  const enemyCnt = React.useRef(null);
-  const fruitsCnt = React.useRef(null);
-  const mytable1 = React.useRef(null);
-  function Maze() {
-    let maze = {
-      width: 0,
-      height: 0,
-      field: [],
-      dist: [],
-      move: [-1, 0, 1, 0, 0, 1, 0, -1],
-      enemiesCnt: 0,
-      fruitsCnt: 0,
-      enemiesCoords: [],
-      score: 0,
-      target: null,
-      keys: null,
-      player: {
-        y: 0,
-        x: 0,
-      },
-      init: function () {
-        this.width = parseInt(width.current.value);
-        this.height = parseInt(height.current.value);
-        this.enemiesCnt = parseInt(enemyCnt.current.value);
-        this.fruitsCnt = parseInt(fruitsCnt.current.value);
-        this.field = [];
-        this.dist = [];
-        this.score = 0;
-        this.enemiesCoords = [];
-        for (var j = 0; j < this.height; j++) {
-          var row = [],
-            row_d = [];
-          for (var i = 0; i < this.width; i++) {
-            row_d.push(Infinity);
-            if (Math.floor(Math.random() * 10) % 3 === 0) row.push(1);
-            else row.push(0);
-          }
-          this.field.push(row);
-          this.dist.push(row_d);
-        }
-        this.player.y = Math.floor(Math.random() * this.height);
-        this.player.x = Math.floor(Math.random() * this.width);
-        this.field[this.player.y][this.player.x] = 0;
-        var i = this.enemiesCnt,
-          loops = 10;
-        while (i > 0 && loops > 0) {
-          loops--;
-          var y = Math.floor(Math.random() * this.height);
-          var x = Math.floor(Math.random() * this.width);
-          if (this.field[y][x] === 0) {
-            this.field[y][x] = 2;
-            this.enemiesCoords.push(y);
-            this.enemiesCoords.push(x);
-            loops = 10;
-            i--;
-          }
-        }
-        enemyCnt.current.value = this.enemiesCnt - i;
-        i = this.fruitsCnt;
-        loops = 10;
-        while (i > 0 && loops > 0) {
-          loops--;
-          var y = Math.floor(Math.random() * this.height);
-          var x = Math.floor(Math.random() * this.width);
-          if (this.field[y][x] === 0) {
-            this.field[y][x] = 3;
-            //this.enemiesCoords.push(y);
-            //this.enemiesCoords.push(x);
-            loops = 10;
-            i--;
-          }
-        }
-        fruitsCnt.current.value = this.fruitsCnt - i;
-        //console.log(this);
-      },
-      setTarget: function (target, keys) {
-        this.target = target;
-        this.keys = keys;
-      },
-      isCoordsCorrect: function (x, y) {
-        if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
-        return true;
-      },
-      setInf: function () {
-        for (var i = 0; i < this.height; i++)
-          for (var j = 0; j < this.width; j++) this.dist[i][j] = Infinity;
-      },
-      redist: function (x, y, d) {
-        if (!this.isCoordsCorrect(x, y) || this.field[y][x] === 1) return;
-        if (d >= this.dist[y][x]) return;
-        this.dist[y][x] = d;
-        for (var i = 0; i < 8; i += 2)
-          this.redist(x + this.move[i], y + this.move[i + 1], d + 1);
-      },
-      draw: function () {
-        this.setInf();
-        this.redist(this.player.x, this.player.y, 0);
-        var table = this.target;
-        table.innerHTML = "";
-        var headTr = document.createElement("tr");
-        var headTd = document.createElement("td");
-        headTd.setAttribute("colspan", this.width);
-        headTd.innerHTML = `Очков ${this.score}`;
-        headTd.style = "text-align: center";
-        headTr.appendChild(headTd);
-        table.appendChild(headTr);
-        for (var j = 0; j < this.height; j++) {
-          var tr = document.createElement("tr");
-          for (var i = 0; i < this.width; i++) {
-            var td = document.createElement("td");
-            if (this.field[j][i] === 1) td.className = "wall";
-            if (this.field[j][i] === 2) td.className = "enemy";
-            if (this.field[j][i] === 3) td.className = "fruit";
-            if (this.player.y === j && this.player.x === i) {
-              td.className = "player";
-            }
-            tr.appendChild(td);
-          }
-          table.appendChild(tr);
-        }
-      },
-      keyboard: function (e) {
-        var redraw = false;
-        if (
-          e.code === this.keys[3] &&
-          this.player.x < this.width - 1 &&
-          (this.field[this.player.y][this.player.x + 1] === 0 ||
-            this.field[this.player.y][this.player.x + 1] === 3)
-        ) {
-          this.player.x++;
-          redraw = true;
-        }
-        if (
-          e.code === this.keys[1] &&
-          this.player.x > 0 &&
-          (this.field[this.player.y][this.player.x - 1] === 0 ||
-            this.field[this.player.y][this.player.x - 1] === 3)
-        ) {
-          this.player.x--;
-          redraw = true;
-        }
-        if (
-          e.code === this.keys[0] &&
-          this.player.y > 0 &&
-          (this.field[this.player.y - 1][this.player.x] === 0 ||
-            this.field[this.player.y - 1][this.player.x] === 3)
-        ) {
-          this.player.y--;
-          redraw = true;
-        }
-        if (
-          e.code === this.keys[2] &&
-          this.player.y < this.height - 1 &&
-          (this.field[this.player.y + 1][this.player.x] === 0 ||
-            this.field[this.player.y + 1][this.player.x] === 3)
-        ) {
-          this.player.y++;
-          redraw = true;
-        }
-        if (redraw) {
-          if (this.field[this.player.y][this.player.x] === 3) {
-            this.score++;
-            this.field[this.player.y][this.player.x] = 0;
-            this.fruitsCnt--;
-          }
-          this.draw();
-        }
-      },
-      lose: function () {
-        onLose(this.score);
-        stop();
-        setIsLose(true);
-      },
-      isLose: function () {
-        for (var i = 0; i < 2 * this.enemiesCnt; i += 2) {
-          if (
-            this.player.y === this.enemiesCoords[i] &&
-            this.player.x === this.enemiesCoords[i + 1]
-          )
-            return true;
-        }
-        return false;
-      },
-      step: function () {
-        var lose = false;
-        for (var i = 0; i < 2 * this.enemiesCnt; i += 2) {
-          var y = this.enemiesCoords[i],
-            x = this.enemiesCoords[i + 1];
-          for (var j = 0; j < 8; j += 2) {
-            var mx = this.move[j],
-              my = this.move[j + 1];
-            if (
-              this.isCoordsCorrect(mx + x, my + y) &&
-              this.dist[y + my][x + mx] < this.dist[y][x] &&
-              (this.field[my + y][mx + x] === 3 ||
-                this.field[my + y][mx + x] === 0)
-            ) {
-              this.field[y][x] = 0;
-              this.field[y + my][x + mx] = 2;
-              this.enemiesCoords[i] += my;
-              this.enemiesCoords[i + 1] += mx;
-              break;
-            }
-          }
-        }
-        this.draw();
-        if (this.isLose()) this.lose();
-      },
-    };
-    return maze;
-  }
-
-  var maze1 = Maze();
-
-  var interval_id1 = React.useRef(null);
-
-  function stop() {
-    clearInterval(interval_id1.current);
-    setIsStarted(false);
-  }
-  const start = React.useCallback(() => {
-    stop();
-    maze1.setTarget(mytable1.current, ["KeyW", "KeyA", "KeyS", "KeyD"]);
-    interval_id1.current = setInterval(maze1.step.bind(maze1), 1000);
-    maze1.init();
-    maze1.draw();
-    setIsStarted(true);
-    setIsLose(false);
-  }, []);
-
+  const [width, setWidth] = React.useState(10);
+  const [height, setHeight] = React.useState(10);
+  const [enemyCnt, setEnemyCnt] = React.useState(2);
+  const [fruitsCnt, setFruitsCnt] = React.useState(2);
+  const [table, setTable] = React.useState(null);
+  const [game, setGame] = React.useState(null);
+  const [themeId, setThemeId] = React.useState(0);
+  const tableContainer = React.useRef(null);
+  const interval = React.useRef(null);
   React.useEffect(() => {
-    function onKeyDown(e) {
-      maze1.keyboard(e);
+    function onKeydown(e) {
+      if (!game) return;
+      directions.forEach((direction) => {
+        if (e.key === direction.key) {
+          game.playerStep(direction.name);
+          setTable(drawTable(game.maze.field));
+        }
+      });
     }
-    document.body.onkeydown = onKeyDown;
+    document.addEventListener("keydown", onKeydown);
+    interval.current = setInterval(() => {
+      if (!game) return;
+      game.enemiesStep();
+      setTable(drawTable(game.maze.field));
+      if (game.isGameOver) {
+        lose();
+      }
+    }, 1000);
     return () => {
-      document.body.onkeydown = null;
+      document.removeEventListener("keydown", onKeydown);
     };
-  }, []);
+  }, [game]);
+  function start() {
+    const game = new gameClass(width, height, enemyCnt, fruitsCnt);
+    stop();
+    setGame(game);
+    setIsStarted(true);
+    setTable(drawTable(game.maze.field));
+    setIsLose(false);
+  }
+  function stop() {
+    setIsStarted(false);
+    setGame(null);
+    clearInterval(interval.current);
+  }
+  function lose() {
+    setIsLose(true);
+    stop();
+    onLose(game.points);
+  }
+  function drawTable(arr) {
+    return arr.map((row, i) => {
+      return (
+        <tr key={i}>
+          {row.map((cell, j) => {
+            return (
+              <td
+                key={j}
+                style={{
+                  width: `${100 / width}%`,
+                  height: `${
+                    tableContainer.current &&
+                    Number(
+                      window
+                        .getComputedStyle(tableContainer.current)
+                        .getPropertyValue("width")
+                        .slice(0, -2)
+                    ) / width
+                  }px`,
+                  backgroundImage: `url(${getBlockImage(themeId, cell)})`,
+                }}
+                className="myTd"
+              ></td>
+            );
+          })}
+        </tr>
+      );
+    });
+  }
+
+  function getBlockImage(id, cell) {
+    switch (id) {
+      case 0:
+        switch (cell) {
+          case "W":
+            return themes[0].wall;
+          case "E":
+            return themes[0].enemie;
+          case "P":
+            return themes[0].player;
+          case "F":
+            return themes[0].fruit;
+          default:
+            return "";
+        }
+      case 1:
+        switch (cell) {
+          case "W":
+            return themes[1].wall;
+          case "E":
+            return themes[1].enemie;
+          case "P":
+            return themes[1].player;
+          case "F":
+            return themes[1].fruit;
+          default:
+            return "";
+        }
+      case 2:
+        switch (cell) {
+          case "W":
+            return themes[2].wall;
+          case "E":
+            return themes[2].enemie;
+          case "P":
+            return themes[2].player;
+          case "F":
+            return themes[2].fruit;
+          default:
+            return "";
+        }
+      case 3:
+        switch (cell) {
+          case "W":
+            return themes[3].wall;
+          case "E":
+            return themes[3].enemie;
+          case "P":
+            return themes[3].player;
+          case "F":
+            return themes[3].fruit;
+          default:
+            return "";
+        }
+      default:
+        switch (cell) {
+          case "W":
+            return themes[0].wall;
+          case "E":
+            return themes[0].enemie;
+          case "P":
+            return themes[0].player;
+          case "F":
+            return themes[0].fruit;
+          default:
+            return "";
+        }
+    }
+  }
   return (
     <div className="w-100 bg-white rounded-3 p-4">
       <h4>Игра</h4>
@@ -252,7 +230,8 @@ function Game({ onLose }) {
           id="width"
           className="rounded-2 border-0 grey-200 px-2"
           placeholder="Ширина поля"
-          ref={width}
+          value={width}
+          onChange={(e) => setWidth(e.target.value)}
           type="number"
         />
       </div>
@@ -260,7 +239,8 @@ function Game({ onLose }) {
         <label className="me-2">Высота:</label>
         <input
           id="height"
-          ref={height}
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
           type="number"
           placeholder="Высота поля"
           className="rounded-2 border-0 grey-200 px-2"
@@ -270,7 +250,8 @@ function Game({ onLose }) {
         <label className="me-2">Количество противников:</label>
         <input
           id="enemyCnt"
-          ref={enemyCnt}
+          value={enemyCnt}
+          onChange={(e) => setEnemyCnt(e.target.value)}
           type="number"
           placeholder="Кол-во противников"
           className="rounded-2 border-0 grey-200 px-2"
@@ -280,7 +261,8 @@ function Game({ onLose }) {
         <label className="me-2">Количество фруктов:</label>
         <input
           id="fruitsCnt"
-          ref={fruitsCnt}
+          value={fruitsCnt}
+          onChange={(e) => setFruitsCnt(e.target.value)}
           type="number"
           placeholder="Кол-во фруктов"
           className="rounded-2 border-0 grey-200 px-2"
@@ -304,14 +286,35 @@ function Game({ onLose }) {
             value="Начать игру"
           />
         )}
+        <ButtonGroup className="w-100">
+          {themes.map((theme, i) => (
+            <Button
+              key={i}
+              variant={themeId === theme.id ? "primary" : "outline-primary"}
+              onClick={() => {
+                setThemeId(theme.id);
+              }}
+            >
+              {theme.name}
+            </Button>
+          ))}
+        </ButtonGroup>
       </div>
-      <div className="rounded-3 border border-2 rounded-4 d-inline-block ">
+      <div
+        className="rounded-3 border border-2 rounded-4 d-inline-block w-100"
+        ref={tableContainer}
+      >
+        <p className="m-0 mx-auto text-center">
+          {game && `Очков: ${game.points}`}
+        </p>
         <table
-          ref={mytable1}
           id="mytable1"
           cellPadding="5px"
           cellSpacing="0px"
-        ></table>
+          className="w-100"
+        >
+          {<tbody>{table}</tbody>}
+        </table>
         {isLose && (
           <div className="lose my-2 ms-2 text-danger">
             <p className="p-0 m-0">Вы проиграли</p>{" "}
