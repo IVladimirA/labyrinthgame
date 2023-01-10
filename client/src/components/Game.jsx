@@ -20,19 +20,19 @@ import spacePlayer from "../assets/space/player.png";
 const directions = [
   {
     name: "up",
-    key: "w",
+    key: "KeyW",
   },
   {
     name: "down",
-    key: "s",
+    key: "KeyS",
   },
   {
     name: "left",
-    key: "a",
+    key: "KeyA",
   },
   {
     name: "right",
-    key: "d",
+    key: "KeyD",
   },
 ];
 const themes = [
@@ -85,7 +85,7 @@ function Game({ onLose }) {
     function onKeydown(e) {
       if (!game) return;
       directions.forEach((direction) => {
-        if (e.key === direction.key) {
+        if (e.code === direction.key) {
           game.playerStep(direction.name);
           setTable(drawTable(game.maze.field));
         }
