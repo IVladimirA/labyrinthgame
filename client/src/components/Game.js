@@ -15,7 +15,6 @@ class Game {
             "left": [0, -1],
             "right": [0, 1]
         }
-        steps.valueOf()
         let dy = steps[direction][0];
         let dx = steps[direction][1];
         let cell = this.maze.field[this.maze.player_coords[0] + dy][this.maze.player_coords[1] + dx];
