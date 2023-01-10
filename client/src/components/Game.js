@@ -17,16 +17,20 @@ class Game {
         }
         let dy = steps[direction][0];
         let dx = steps[direction][1];
-        let cell = this.maze.field[this.maze.playerCoords[0] + dy][this.maze.playerCoords[1] + dx];
-        if (cell !== 'W') {
-            this.maze.field[this.maze.playerCoords[0]][this.maze.playerCoords[1]] = '.';
-            this.maze.playerCoords[0] += dy;
-            this.maze.playerCoords[1] += dx;
-            if (cell === 'F')
-                ++this.points;
-            else if (cell === 'E')
-                this.isGameOver = true;
-            this.maze.field[this.maze.playerCoords[0]][this.maze.playerCoords[1]] = 'P';
+        let y = this.maze.playerCoords[0];
+        let x = this.maze.playerCoords[1];
+        if (y + dy >= 0 && y + dy < this.maze.height && x + dx >= 0 && x + dx < this.maze.width) {
+            let cell = this.maze.field[y + dy][x + dx];
+            if (cell !== 'W') {
+                this.maze.field[y][x] = '.';
+                this.maze.playerCoords[0] += dy;
+                this.maze.playerCoords[1] += dx;
+                if (cell === 'F')
+                    ++this.points;
+                else if (cell === 'E')
+                    this.isGameOver = true;
+                this.maze.field[y][x] = 'P';
+            }
         }
     }
 
@@ -65,10 +69,12 @@ class Game {
                     min_y = i;
                     min_x = j + 1;
                 }
-            if (this.maze.field[min_y][min_x] === 'P')
-                this.isGameOver= true;
-            this.maze.field[min_y][min_x] = 'E';
-            this.maze.field[i][j] = '.';
+            if (min_dist !== null) {
+                if (this.maze.field[min_y][min_x] === 'P')
+                    this.isGameOver = true;
+                this.maze.field[min_y][min_x] = 'E';
+                this.maze.field[i][j] = '.';
+            }
         }
     }
 
