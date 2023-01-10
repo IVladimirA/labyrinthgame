@@ -4,7 +4,7 @@ export class Maze {
         this.width = width;
         this.height = height;
         this.field = [];
-        this.user_coords = [];
+        this.player_coords = [];
         this.enemyCnt = enemyCnt;
         this.enemies = [];
         this.fruitCnt = fruitCnt;
@@ -24,13 +24,13 @@ export class Maze {
         let x = Math.floor(Math.random() * this.width);
         this.dig(x, y);
 
-        while (this.user_coords.length === 0) {
+        while (this.player_coords.length === 0) {
             y = Math.floor(Math.random() * this.height);
             x = Math.floor(Math.random() * this.width);
             if (this.field[y][x] === '.') {
-                this.field[y][x] = 'U';
-                this.user_coords.push(y);
-                this.user_coords.push(x);
+                this.field[y][x] = 'P';
+                this.player_coords.push(y);
+                this.player_coords.push(x);
             }
         }
 

@@ -5,10 +5,10 @@ class Game {
     constructor(width, height, enemyCnt, fruitCnt) {
         this.maze = new Maze(width, height, enemyCnt, fruitCnt);
         this.points = 0;
-        this.end = false;
+        this.isGameOver = false;
     }
 
-    user_step(direction) {
+    player_step(direction) {
         let steps = {
             "up": [-1, 0],
             "down": [1, 0],
@@ -18,14 +18,16 @@ class Game {
         steps.valueOf()
         let dy = steps[direction][0];
         let dx = steps[direction][1];
-        let cell = this.maze.field[this.maze.user_coords[0] + dy][this.maze.user_coords[1] + dx];
+        let cell = this.maze.field[this.maze.player_coords[0] + dy][this.maze.player_coords[1] + dx];
         if (cell !== 'W') {
-            this.maze.field[this.maze.user_coords[0]][this.maze.user_coords[1]] = '.';
-            this.maze.user_coords[0] += dy;
-            this.maze.user_coords[1] += dx;
-            if (cell === 'F') ++this.points;
-            else if (cell === 'E') this.end = true;
-            this.maze.field[this.maze.user_coords[0]][this.maze.user_coords[1]] = 'U';
+            this.maze.field[this.maze.player_coords[0]][this.maze.player_coords[1]] = '.';
+            this.maze.player_coords[0] += dy;
+            this.maze.player_coords[1] += dx;
+            if (cell === 'F')
+                ++this.points;
+            else if (cell === 'E')
+                this.isGameOver = true;
+            this.maze.field[this.maze.player_coords[0]][this.maze.player_coords[1]] = 'P';
         }
     }
 
@@ -33,7 +35,7 @@ class Game {
         let field = [];
         for (let i = 0; i < this.maze.height; ++i)
             field.push(this.maze.field[i].slice());
-        field = this.get_info(field, this.maze.user_coords[0], this.maze.user_coords[1], 0);
+        field = this.get_info(field, this.maze.player_coords[0], this.maze.player_coords[1], 0);
         for (let enemy of this.maze.enemies) {
             let min_dist = null;
             let min_y = null;
@@ -64,8 +66,8 @@ class Game {
                     min_y = i;
                     min_x = j + 1;
                 }
-            if (this.maze.field[min_y][min_x] === 'U')
-                this.end = true;
+            if (this.maze.field[min_y][min_x] === 'P')
+                this.isGameOver= true;
             this.maze.field[min_y][min_x] = 'E';
             this.maze.field[i][j] = '.';
         }
