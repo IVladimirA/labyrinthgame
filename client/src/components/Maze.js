@@ -4,7 +4,7 @@ export class Maze {
         this.width = width;
         this.height = height;
         this.field = [];
-        this.player_coords = [];
+        this.playerCoords = [];
         this.enemyCnt = enemyCnt;
         this.enemies = [];
         this.fruitCnt = fruitCnt;
@@ -24,13 +24,13 @@ export class Maze {
         let x = Math.floor(Math.random() * this.width);
         this.dig(x, y);
 
-        while (this.player_coords.length === 0) {
+        while (this.playerCoords.length === 0) {
             y = Math.floor(Math.random() * this.height);
             x = Math.floor(Math.random() * this.width);
             if (this.field[y][x] === '.') {
                 this.field[y][x] = 'P';
-                this.player_coords.push(y);
-                this.player_coords.push(x);
+                this.playerCoords.push(y);
+                this.playerCoords.push(x);
             }
         }
 
@@ -55,16 +55,16 @@ export class Maze {
 
     dig(i, j) {
         this.field[i][j] = '.';
-        let steps = this.get_jump(i, j);
+        let steps = this.getJump(i, j);
         while (steps.length > 0) {
             let step = steps[Math.floor(Math.random() * steps.length)];
             this.field[(i + step[0]) / 2][(j + step[1]) / 2] = '.';
             this.dig(step[0], step[1]);
-            steps = this.get_jump(i, j);
+            steps = this.getJump(i, j);
         }
     }
 
-    get_jump(i, j) {
+    getJump(i, j) {
         let res = [];
         if (i - 2 >= 0 && this.field[i - 2][j] === 'W') res.push([i - 2, j]);
         if (j - 2 >= 0 && this.field[i][j - 2] === 'W') res.push([i, j - 2]);
