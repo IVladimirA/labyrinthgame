@@ -62,22 +62,11 @@ td {
   margin: 0;
 }
 
-td.wall {
-  background-color: gray;
+.myTd {
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat;
 }
-
-td.player {
-  background-color: green;
-}
-
-td.enemy {
-  background-color: red;
-}
-
-td.fruit {
-  background-color: yellow;
-}
-
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
